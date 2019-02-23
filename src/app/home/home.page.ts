@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { File, FileEntry } from '@ionic-native/file/ngx';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { from, Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-home',
@@ -49,7 +49,7 @@ export class HomePage {
     }
 
     public uploadPicture(filePath: string): void {
-        this.uploadFile(filePath).subscribe(
+        this.uploadFile('http://10.0.0.10:55384/api/instaboard/foto/upload', filePath).subscribe(
             () => {
                 console.log('OK');
             },
@@ -59,21 +59,19 @@ export class HomePage {
         );
     }
 
-    private uploadFile(filePath: string): Observable<boolean> {
-        const url = 'http://10.0.0.10:55384/api/instaboard/foto/upload';
-        const filename = 'test.jpg';
-
+    private uploadFile(serverurl: string, filePath: string): Observable<boolean> {
+        // convert filePath into blob. see:
+        // https://cordova.apache.org/blog/2017/10/18/from-filetransfer-to-xhr2.html
         return from(this.file.resolveLocalFilesystemUrl(filePath)).pipe(
-            // convert filePath into blob. see:
-            // https://cordova.apache.org/blog/2017/10/18/from-filetransfer-to-xhr2.html
             mergeMap((fileEntry: FileEntry) => {
                 // wrap callback into observable
                 return Observable.create(observer => {
                     fileEntry.file(file => {
+                        const name = file.name;
                         const reader = new FileReader();
                         reader.onloadend = () => {
                             const imgBlob = new Blob([reader.result], { type: file.type });
-                            observer.next(imgBlob);
+                            observer.next([imgBlob, name]);
                             observer.complete();
                         };
                         reader.readAsArrayBuffer(file);
@@ -82,12 +80,12 @@ export class HomePage {
                     });
                 });
             }),
-            mergeMap((imgBlob: Blob) => {
+            mergeMap(([imgBlob, name]) => {
                 const formData = new FormData();
-                formData.append('file', imgBlob, filename);
+                formData.append('file', imgBlob, name);
 
                 return this.httpClient
-                    .post(url, formData).pipe(
+                    .post(serverurl, formData).pipe(
                         map(() => true)
                     );
             })
