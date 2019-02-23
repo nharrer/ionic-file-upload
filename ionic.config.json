@@ -1,0 +1,7 @@
+{
+  "name": "file-upload",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}

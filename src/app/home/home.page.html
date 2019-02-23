@@ -1,0 +1,19 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>
+            Ionic Blank
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+    <ion-button expand="block" (click)="takePicture()">
+        Take Picture3
+    </ion-button>
+
+    <ion-button expand="block" (click)="uploadPicture(currentImagePath)" [disabled]="!currentImagePath">
+        Upload Picture
+    </ion-button>
+
+    <img [src]="currentImageUrl" *ngIf="currentImageUrl"/>
+</ion-content>
