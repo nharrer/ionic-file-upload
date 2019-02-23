@@ -5,6 +5,7 @@ import { File, FileEntry } from '@ionic-native/file/ngx';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { from, Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-home',
@@ -17,12 +18,13 @@ export class HomePage {
         private camera: Camera,
         private webview: WebView,
         private file: File,
+        private sanitizer: DomSanitizer,
         private httpClient: HttpClient
     ) {
     }
 
     public currentImagePath: string = null;
-    public currentImageUrl: string = null;
+    public currentImageSaveUrl: SafeUrl = null;
 
     public takePicture(): void {
         const options: CameraOptions = {
@@ -36,9 +38,11 @@ export class HomePage {
         from(this.camera.getPicture(options)).subscribe(
             imagePath => {
                 this.currentImagePath = imagePath;
-                this.currentImageUrl = this.webview.convertFileSrc(imagePath);
+                const compatibleUrl = this.webview.convertFileSrc(imagePath);   // create url the webview understands
+                this.currentImageSaveUrl = this.sanitizer.bypassSecurityTrustUrl(compatibleUrl);    // make url trustworthy (ios needs this)
                 console.log(this.currentImagePath);
-                console.log(this.currentImageUrl);
+                console.log(compatibleUrl);
+                console.log(this.currentImageSaveUrl);
             }, (err) => {
                 console.log(err);
             });

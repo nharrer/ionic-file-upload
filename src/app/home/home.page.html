@@ -8,12 +8,12 @@
 
 <ion-content padding>
     <ion-button expand="block" (click)="takePicture()">
-        Take Picture3
+        Take Picture
     </ion-button>
 
     <ion-button expand="block" (click)="uploadPicture(currentImagePath)" [disabled]="!currentImagePath">
         Upload Picture
     </ion-button>
 
-    <img [src]="currentImageUrl" *ngIf="currentImageUrl"/>
+    <img [src]="currentImageSaveUrl" *ngIf="currentImageSaveUrl"/>
 </ion-content>
