@@ -1,7 +1,7 @@
 # ionic-file-upload
 Example ionic 4 project which shows how to upload an image taken with the camera plugin without the deprecated FileTransfer plugin.
 
-This is based on the empty ionic 4 starter project with following plugins installer:
+This is based on the empty ionic 4 starter project with following plugins installed:
 
  * File: https://ionicframework.com/docs/native/file
  * Camera: https://ionicframework.com/docs/native/camera
